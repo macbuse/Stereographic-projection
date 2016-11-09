@@ -12,5 +12,7 @@ Tested Blender 2.77
 
 ![before](https://github.com/macbuse/Stereographic-projection/blob/master/flat%20mesh.png)
 
+![after](https://github.com/macbuse/Stereographic-projection/blob/master/modified%20mesh.png)
+
 
 
