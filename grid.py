@@ -1,0 +1,116 @@
+# This example assumes we have a mesh object selected
+
+#makes a grid 
+#splits it into two - small square + something else
+#the small square is the south pole
+#the rest the northern hemisphere
+
+import bpy, bmesh
+import numpy as np 
+from bpy_extras import object_utils
+
+def apply_boolean(obj_A, obj_B, bool_type='INTERSECT'):
+    
+    print('+++',obj_A, obj_B)
+    bpy.ops.object.select_all(action='DESELECT')
+    obj_A.select= True
+    
+    bpy.context.scene.objects.active = obj_A
+    bpy.ops.object.modifier_add(type='BOOLEAN')
+
+    mod = obj_A.modifiers
+    mod[0].name = obj_A.name + bool_type
+    mod[0].object = obj_B
+    mod[0].operation = bool_type
+
+    bpy.ops.object.modifier_apply(apply_as='DATA', 
+								  modifier=mod[0].name)
+
+def chessboard(npts=24,
+              size = 2):
+    me = bpy.data.meshes.new("Chess")
+    ob = bpy.data.objects.new("Chess", me)
+    bpy.context.scene.objects.link(ob)
+    ob.location = [0,0,0]
+    bm = bmesh.new()   # create an empty BMesh
+    bm.from_mesh(me)   # fill it in from a Mesh
+
+    xs = np.linspace(-size,size,npts)
+    ys = xs[:]
+
+       
+    tt = []
+    for x in xs:        
+        tt.append([])
+        for y in ys:
+            tt[-1].append(bm.verts.new((x,y,0)))
+        
+    for i,row in enumerate(tt[:-1]):
+        for j,elt in enumerate(row[:-1]):
+            if i*j % 2 == 1: continue
+            bm.faces.new([tt[i][j],tt[i][j+1],tt[i+1][j+1],tt[i+1][j]])
+                
+    # Finish up, write the bmesh back to the mesh
+    bm.to_mesh(me)
+    bm.free()  # free and prevent further access
+    bpy.context.scene.objects.active = ob
+    return ob
+
+def cube_slicer(cube_scale=.85,
+                z_offset=1):
+    
+    def clean_up(cut_off=.1):
+        '''cleans up after boolean operations
+        deleting any extraneous vertices out of 
+        the xy-plane
+        '''
+        ob = bpy.context.object
+        bpy.ops.object.mode_set(mode = 'EDIT')
+        me = ob.data
+        bm = bmesh.from_edit_mesh(me)
+
+        verts = [v for v in bm.verts 
+                if abs(v.co[2]) > cut_off]
+
+        bmesh.ops.delete(bm, geom=verts, context=1)
+        bmesh.update_edit_mesh(me)
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+    xx = bpy.context.active_object 
+    xx.select= True
+    bpy.ops.object.duplicate()
+    yy = bpy.context.scene.objects.active
+    print(yy.name)
+    yy.location = [0,0,z_offset]
+
+    bpy.ops.object.select_all(action='DESELECT')
+
+    bpy.ops.mesh.primitive_cube_add(location=[0,0,0])
+    cc = bpy.context.scene.objects.active
+    cc.scale = [cube_scale,cube_scale,1]
+
+    bpy.ops.object.duplicate()
+    zz = bpy.context.scene.objects.active
+    print(yy.name)
+    zz.location = [0,0,z_offset]
+
+    apply_boolean(xx, cc, bool_type='INTERSECT')
+    clean_up()
+    apply_boolean(yy, zz, bool_type='DIFFERENCE')
+    clean_up()
+
+    #get rid of the cubes
+    bpy.ops.object.select_all(action='DESELECT')
+    for x in [cc,zz]:
+        x.select = True
+    
+    bpy.ops.object.delete() 
+        
+
+chessboard()
+
+cube_slicer()
+
+
+
+
