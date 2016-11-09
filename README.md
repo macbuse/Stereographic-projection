@@ -4,11 +4,17 @@ In geometry, the stereographic projection is a particular mapping (function) tha
 
 Source : [wiki](https://en.wikipedia.org/wiki/Stereographic_projection)
 
+---
+
 The script implements the inverse of the stereographic projection: it maps a plane onto the sphere.
 It replaces the active bm.mesh with a mesh on the sphere then extrudes this to a solid for 3D printing.
 
 Tested Blender 2.77
 
+- stereo_proj.py : replaces the active bm.mesh with a mesh representing inverse of the stereographic projection
+- grid.py :  Blender script to make a pair of meshes accepted by [stereo_proj.py](https://github.com/macbuse/Stereographic-projection/blob/master/stereo_proj.py)
+
+---
 
 ![before](https://github.com/macbuse/Stereographic-projection/blob/master/flat%20mesh.png)
 
