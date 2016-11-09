@@ -12,7 +12,7 @@ It replaces the active bm.mesh with a mesh on the sphere then extrudes this to a
 Tested Blender 2.77
 
 - stereo_proj.py : replaces the active bm.mesh with a mesh representing inverse of the stereographic projection
-- grid.py :  Blender script to make a pair of meshes accepted by [stereo_proj.py](https://github.com/macbuse/Stereographic-projection/blob/master/stereo_proj.py)
+- [grid.py](https://github.com/macbuse/Stereographic-projection/blob/master/grid.py0 :  Blender script to make a pair of meshes accepted by [stereo_proj.py](https://github.com/macbuse/Stereographic-projection/blob/master/stereo_proj.py)
 
 ---
 
