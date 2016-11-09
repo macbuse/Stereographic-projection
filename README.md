@@ -10,4 +10,7 @@ It replaces the active bm.mesh with a mesh on the sphere then extrudes this to a
 Tested Blender 2.77
 
 
+![before](https://github.com/macbuse/Stereographic-projection/blob/master/flat%20mesh.png)
+
+
 
