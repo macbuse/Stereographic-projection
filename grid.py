@@ -1,4 +1,4 @@
-# This example assumes we have a mesh object selected
+#makes a pair of meshes with lots of holes
 
 import bpy, bmesh
 import numpy as np 
