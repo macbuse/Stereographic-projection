@@ -1,10 +1,5 @@
 # This example assumes we have a mesh object selected
 
-#makes a grid 
-#splits it into two - small square + something else
-#the small square is the south pole
-#the rest the northern hemisphere
-
 import bpy, bmesh
 import numpy as np 
 from bpy_extras import object_utils
@@ -28,17 +23,18 @@ def apply_boolean(obj_A, obj_B, bool_type='INTERSECT'):
 
 def chessboard(npts=24,
               size = 2):
+                  
     me = bpy.data.meshes.new("Chess")
     ob = bpy.data.objects.new("Chess", me)
     bpy.context.scene.objects.link(ob)
     ob.location = [0,0,0]
+    
     bm = bmesh.new()   # create an empty BMesh
     bm.from_mesh(me)   # fill it in from a Mesh
 
     xs = np.linspace(-size,size,npts)
     ys = xs[:]
 
-       
     tt = []
     for x in xs:        
         tt.append([])
@@ -47,17 +43,22 @@ def chessboard(npts=24,
         
     for i,row in enumerate(tt[:-1]):
         for j,elt in enumerate(row[:-1]):
+            #skip every fourth face
             if i*j % 2 == 1: continue
             bm.faces.new([tt[i][j],tt[i][j+1],tt[i+1][j+1],tt[i+1][j]])
                 
     # Finish up, write the bmesh back to the mesh
     bm.to_mesh(me)
     bm.free()  # free and prevent further access
+    #be polite: make active and return a reference
     bpy.context.scene.objects.active = ob
     return ob
 
 def cube_slicer(cube_scale=.85,
                 z_offset=1):
+                    
+    '''splits selected mesh into two parts 
+    using boolean operations'''
     
     def clean_up(cut_off=.1):
         '''cleans up after boolean operations
@@ -80,7 +81,6 @@ def cube_slicer(cube_scale=.85,
     xx.select= True
     bpy.ops.object.duplicate()
     yy = bpy.context.scene.objects.active
-    print(yy.name)
     yy.location = [0,0,z_offset]
 
     bpy.ops.object.select_all(action='DESELECT')
@@ -90,18 +90,17 @@ def cube_slicer(cube_scale=.85,
     cc.scale = [cube_scale,cube_scale,1]
 
     bpy.ops.object.duplicate()
-    zz = bpy.context.scene.objects.active
-    print(yy.name)
-    zz.location = [0,0,z_offset]
+    dd = bpy.context.scene.objects.active
+    dd.location = [0,0,z_offset]
 
     apply_boolean(xx, cc, bool_type='INTERSECT')
     clean_up()
-    apply_boolean(yy, zz, bool_type='DIFFERENCE')
+    apply_boolean(yy, dd, bool_type='DIFFERENCE')
     clean_up()
 
     #get rid of the cubes
     bpy.ops.object.select_all(action='DESELECT')
-    for x in [cc,zz]:
+    for x in [cc,dd]:
         x.select = True
     
     bpy.ops.object.delete() 
@@ -109,7 +108,7 @@ def cube_slicer(cube_scale=.85,
 
 chessboard()
 
-cube_slicer()
+cube_slicer(cube_scale=.85)
 
 
 
